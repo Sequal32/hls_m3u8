@@ -240,6 +240,14 @@ impl<'a> MediaPlaylistBuilder<'a> {
         self
     }
 
+    /// Removes the first inserted [`MediaSegment`] to the resulting playlist
+    pub fn pop_segment(&mut self) -> &mut Self {
+        let segments = self.segments.get_or_insert_with(StableVec::new);
+        segments.remove_first();
+
+        self
+    }
+
     /// Parse the rest of the [`MediaPlaylist`] from an m3u8 file.
     pub fn parse(&mut self, input: &'a str) -> crate::Result<MediaPlaylist<'a>> {
         parse_media_playlist(input, self)
@@ -399,7 +407,9 @@ impl<'a> MediaPlaylist<'a> {
     /// Returns a builder for [`MediaPlaylist`].
     #[must_use]
     #[inline]
-    pub fn builder() -> MediaPlaylistBuilder<'a> { MediaPlaylistBuilder::default() }
+    pub fn builder() -> MediaPlaylistBuilder<'a> {
+        MediaPlaylistBuilder::default()
+    }
 
     /// Computes the `Duration` of the [`MediaPlaylist`], by adding each segment
     /// duration together.
